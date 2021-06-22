@@ -26,7 +26,23 @@
 }
 
 .row {
-  margin: 10px 20px;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin: 0 -16px;
+}
+
+.col-50, .col {
+    padding: 5px 15px;
+}
+.col {
+    -ms-flex: 100%;
+    flex: 100%;
+}
+.col-50 {
+    -ms-flex: 50%;
+    flex: 50%;
 }
 
 .row-remember {
