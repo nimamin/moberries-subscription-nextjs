@@ -5,6 +5,7 @@ export default function Select({
   label,
   options,
   defaultValue,
+  onChange,
 }: {
   register;
   errors;
@@ -12,6 +13,7 @@ export default function Select({
   label;
   options;
   defaultValue?;
+  onChange?;
 }) {
   return (
     <>
@@ -22,6 +24,7 @@ export default function Select({
         defaultValue={defaultValue}
         required
         className={"form-field" + (errors[name] ? " has-error" : "")}
+        onChange={onChange}
       >
         {options.map(({ value, title }) => (
           <option value={value} key={value}>

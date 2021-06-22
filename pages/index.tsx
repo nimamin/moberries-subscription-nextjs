@@ -1,10 +1,11 @@
-import { useState, FC } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "../components/layout";
 import Step from "../components/step";
 import Select from "../components/select";
 import Input from "../components/input";
 import Checkbox from "../components/checkbox";
+import { fetchPrices } from "../lib/fetch";
 
 const IndexPage: FC = () => {
   const [step, setStep] = useState<number>(0);
@@ -13,7 +14,40 @@ const IndexPage: FC = () => {
   const [space, setSpace] = useState<number>(5);
   const [upfront, setUpfront] = useState<boolean>(false);
 
+  const [finalPrice, setFinalPrice] = useState<number>(0);
+
   const thisYear = new Date().getFullYear();
+
+  let prices = [];
+  fetchPrices().then((res) => {
+    prices = res.subscription_plans.reduce((map, obj) => {
+      map[obj.duration_months] = obj.price_usd_per_gb;
+      return map;
+    }, {});
+    calculatePrice();
+  });
+
+  const calculatePrice = () => {
+    let price = 0;
+    price = prices[duration] * space;
+    if (upfront) price = price * 0.9;
+    setFinalPrice(price);
+  };
+
+  const handleUpfrontChange = (e) => {
+    setUpfront(e.target.checked);
+    calculatePrice();
+  }
+
+  const handleDurationChange = (e) => {
+    setDuration(e.target.value);
+    calculatePrice();
+  }
+
+  const handleSpaceChange = (e) => {
+    setSpace(e.target.value);
+    calculatePrice();
+  }
 
   const {
     register,
@@ -37,6 +71,12 @@ const IndexPage: FC = () => {
 
   return (
     <Layout>
+      <div>
+        <p>{duration} Month</p>
+        <p>{space} Gigabytes</p>
+        <p>{upfront? "": "No"} Upfront Payment</p>
+        <p>{finalPrice} $</p>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Step turn={step} index={0}>
           <div className="row">
@@ -56,6 +96,7 @@ const IndexPage: FC = () => {
                   title: `${m} Months`,
                 }))}
                 defaultValue="12"
+                onChange={handleDurationChange}
               />
             </div>
           </div>
@@ -71,6 +112,7 @@ const IndexPage: FC = () => {
                   title: `${m} Gigabytes`,
                 }))}
                 defaultValue="5"
+                onChange={handleSpaceChange}
               />
             </div>
           </div>
@@ -80,6 +122,7 @@ const IndexPage: FC = () => {
                 label="Upfront Payment"
                 name="upfront"
                 register={register}
+                onChange={handleUpfrontChange}
               />
             </div>
           </div>
@@ -164,7 +207,19 @@ const IndexPage: FC = () => {
         <Step turn={step} index={2}>
           <div className="row">
             <div className="col">
-              <h3 className="form-header">Duration is required</h3>
+              <h3 className="form-header">Confirmation</h3>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <p>Duration:</p>
+              <h3>{duration} Month</h3>
+              <p>Space:</p>
+              <h3>{space} Gigabytes</h3>
+              <p>Upfront Payment:</p>
+              <h3>{upfront ? "Yes" : "No"}</h3>
+              <p>Total:</p>
+              <h3>{finalPrice} $</h3>
             </div>
           </div>
           <div className="row">
@@ -175,6 +230,15 @@ const IndexPage: FC = () => {
                 register={register}
                 errors={errors}
                 placeHolder="your.email@example.com"
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <Checkbox
+                label="Terms and conditions"
+                name="terms"
+                register={register}
               />
             </div>
           </div>

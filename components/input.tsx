@@ -5,12 +5,14 @@ export default function Input({
   name,
   label,
   placeHolder,
+  onChange,
 }: {
   register;
   errors;
   name;
   label;
   placeHolder?;
+  onChange?;
 }) {
   return (
     <>
@@ -21,6 +23,7 @@ export default function Input({
         required
         className={"form-field" + (errors[name] ? " has-error" : "")}
         placeholder={placeHolder}
+        onChange={onChange}
       />
       {errors[name] && (
         <span className="error-label">{errors[name].message}</span>
