@@ -1,4 +1,3 @@
-
 export default function Input({
   register,
   errors,
@@ -19,8 +18,7 @@ export default function Input({
       <label>{label}</label>
       <input
         id={name}
-        {...register(name)}
-        required
+        {...register(name, { required: true })}
         className={"form-field" + (errors[name] ? " has-error" : "")}
         placeholder={placeHolder}
         onChange={onChange}
