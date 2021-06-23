@@ -15,6 +15,7 @@ const IndexPage: FC = () => {
   let prices = [];
   fetchPrices().then((res) => {
     prices = res.subscription_plans.reduce((map, obj) => {
+      // creat a look up table from duration_month to the price
       map[obj.duration_months] = obj.price_usd_per_gb;
       return map;
     }, {});
@@ -23,8 +24,13 @@ const IndexPage: FC = () => {
 
   const calculatePrice = async () => {
     let price = 0;
+
+    // the look up table gives the prices per gigabyte
     price = prices[formData.duration] * formData.space;
+
+    // upfront payment reduces the price by 10%
     if (formData.upfront) price = price * 0.9;
+    
     await setFinalPrice(price);
   };
 
