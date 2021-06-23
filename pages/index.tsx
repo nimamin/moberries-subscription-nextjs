@@ -1,22 +1,14 @@
 import { FC, useState } from "react";
-import { useForm } from "react-hook-form";
 import Layout from "../components/layout";
 import Step from "../components/step";
 import Step1 from "../components/step-1";
 import Step2 from "../components/step-2";
 import Step3 from "../components/step-3";
-import Select from "../components/select";
-import Input from "../components/input";
-import Checkbox from "../components/checkbox";
 import { fetchPrices, postData } from "../lib/fetch";
 import { subscriptionDTO } from "../lib/types";
 
 const IndexPage: FC = () => {
   const [step, setStep] = useState<number>(0);
-
-  const [duration, setDuration] = useState<number>(12);
-  const [space, setSpace] = useState<number>(5);
-  const [upfront, setUpfront] = useState<boolean>(false);
 
   const [finalPrice, setFinalPrice] = useState<number>(0);
 
@@ -31,23 +23,23 @@ const IndexPage: FC = () => {
 
   const calculatePrice = async () => {
     let price = 0;
-    price = prices[duration] * space;
-    if (upfront) price = price * 0.9;
+    price = prices[formData.duration] * formData.space;
+    if (formData.upfront) price = price * 0.9;
     await setFinalPrice(price);
   };
 
-  const handleUpfrontChange = async (value: boolean) => {
-    await setUpfront(value);
+  const handleUpfrontChange = async (upfront: boolean) => {
+    await setFormData({ ...formData, upfront });
     calculatePrice();
   };
 
-  const handleDurationChange = async (value: number) => {
-    await setDuration(value);
+  const handleDurationChange = async (duration: number) => {
+    await setFormData({ ...formData, duration });
     calculatePrice();
   };
 
-  const handleSpaceChange = async (value: number) => {
-    await setSpace(value);
+  const handleSpaceChange = async (space: number) => {
+    await setFormData({ ...formData, space });
     calculatePrice();
   };
 
@@ -97,9 +89,9 @@ const IndexPage: FC = () => {
   return (
     <Layout>
       <div>
-        <p>{duration} Month</p>
-        <p>{space} Gigabytes</p>
-        <p>{upfront ? "" : "No"} Upfront Payment</p>
+        <p>{formData.duration} Month</p>
+        <p>{formData.space} Gigabytes</p>
+        <p>{formData.upfront ? "" : "No"} Upfront Payment</p>
         <p>{finalPrice} $</p>
       </div>
       <Step1
@@ -116,7 +108,12 @@ const IndexPage: FC = () => {
       <Step3
         turn={step}
         index={2}
-        planProperties={{ duration, space, upfront, finalPrice }}
+        planProperties={{
+          duration: formData.duration,
+          space: formData.space,
+          upfront: formData.upfront,
+          finalPrice: finalPrice,
+        }}
         onSubmit={onSubmit3}
         onBack={backStep}
       />
